@@ -118,7 +118,6 @@ model Recipe {
   tips             String?
   lineageNote      String?
   aiSummary        String?
-  embedding        Unsupported("vector")?
   createdById      String
   lastEditedById   String
   createdAt        DateTime            @default(now())
