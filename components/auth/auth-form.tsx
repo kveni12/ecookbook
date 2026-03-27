@@ -59,7 +59,15 @@ export function AuthForm({
   );
 }
 
-export function AuthFooterLink({ prompt, href, label }: { prompt: string; href: Route }) {
+export function AuthFooterLink({
+  prompt,
+  href,
+  label
+}: {
+  prompt: string;
+  href: Route;
+  label: string;
+}) {
   return (
     <p>
       {prompt}{" "}
