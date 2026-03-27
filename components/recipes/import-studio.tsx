@@ -37,7 +37,19 @@ const tabs = [
   { id: "photo", label: "Photo / recipe card" }
 ] as const;
 
-export function ImportStudio({ spaces }: { spaces: SpaceOption[] }) {
+export function ImportStudio({
+  spaces,
+  defaultSpaceId,
+  cookbookId,
+  title = "Recipe studio",
+  description = "Everything starts here: manual entry, pasted website text, Instagram links, voice notes, videos, and recipe card photos all flow into one editable draft experience."
+}: {
+  spaces: SpaceOption[];
+  defaultSpaceId?: string;
+  cookbookId?: string;
+  title?: string;
+  description?: string;
+}) {
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]["id"]>("website");
   const [uploading, setUploading] = useState<UploadKind | null>(null);
   const [uploads, setUploads] = useState<Record<UploadKind, string>>({
@@ -120,11 +132,8 @@ export function ImportStudio({ spaces }: { spaces: SpaceOption[] }) {
   return (
     <Card id="new-recipe">
       <CardHeader>
-        <CardTitle>Recipe studio</CardTitle>
-        <CardDescription>
-          Everything starts here: manual entry, pasted website text, Instagram links, voice notes, videos, and recipe
-          card photos all flow into one editable draft experience.
-        </CardDescription>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex flex-wrap gap-2">
@@ -146,7 +155,7 @@ export function ImportStudio({ spaces }: { spaces: SpaceOption[] }) {
 
         {activeTab === "manual" ? (
           <form action={saveRecipeAction} className="grid gap-4 md:grid-cols-2">
-            <ManualSharedFields spaces={spaces} />
+            <ManualSharedFields spaces={spaces} defaultSpaceId={defaultSpaceId} cookbookId={cookbookId} />
             <label className="space-y-2 md:col-span-2">
               <span className="text-sm font-medium">Ingredients</span>
               <Textarea
@@ -173,6 +182,8 @@ export function ImportStudio({ spaces }: { spaces: SpaceOption[] }) {
           <SourceDraftForm
             action={importRecipeSourceAction}
             spaces={spaces}
+            defaultSpaceId={defaultSpaceId}
+            cookbookId={cookbookId}
             importMode="website"
             sourceType="WEBSITE"
             title="Import from a website"
@@ -200,6 +211,8 @@ export function ImportStudio({ spaces }: { spaces: SpaceOption[] }) {
           <SourceDraftForm
             action={importRecipeSourceAction}
             spaces={spaces}
+            defaultSpaceId={defaultSpaceId}
+            cookbookId={cookbookId}
             importMode="social"
             sourceType="SOCIAL"
             title="Save a social recipe link"
@@ -226,6 +239,8 @@ export function ImportStudio({ spaces }: { spaces: SpaceOption[] }) {
           <SourceDraftForm
             action={importRecipeSourceAction}
             spaces={spaces}
+            defaultSpaceId={defaultSpaceId}
+            cookbookId={cookbookId}
             importMode="voice"
             sourceType="FAMILY_ORAL_HISTORY"
             title="Create from a voice memo"
@@ -278,6 +293,8 @@ export function ImportStudio({ spaces }: { spaces: SpaceOption[] }) {
           <SourceDraftForm
             action={importRecipeSourceAction}
             spaces={spaces}
+            defaultSpaceId={defaultSpaceId}
+            cookbookId={cookbookId}
             importMode="video"
             sourceType="IMPORTED_VIDEO"
             title="Create from video"
@@ -324,6 +341,8 @@ export function ImportStudio({ spaces }: { spaces: SpaceOption[] }) {
           <SourceDraftForm
             action={importRecipeSourceAction}
             spaces={spaces}
+            defaultSpaceId={defaultSpaceId}
+            cookbookId={cookbookId}
             importMode="photo"
             sourceType="MANUAL"
             title="Create from a photo or recipe card"
@@ -368,9 +387,18 @@ export function ImportStudio({ spaces }: { spaces: SpaceOption[] }) {
   );
 }
 
-function ManualSharedFields({ spaces }: { spaces: SpaceOption[] }) {
+function ManualSharedFields({
+  spaces,
+  defaultSpaceId,
+  cookbookId
+}: {
+  spaces: SpaceOption[];
+  defaultSpaceId?: string;
+  cookbookId?: string;
+}) {
   return (
     <>
+      {cookbookId ? <input type="hidden" name="cookbookId" value={cookbookId} /> : null}
       <label className="space-y-2">
         <span className="text-sm font-medium">Title</span>
         <Input name="title" placeholder="Grandma Leela's dosa" required />
@@ -383,23 +411,33 @@ function ManualSharedFields({ spaces }: { spaces: SpaceOption[] }) {
         <span className="text-sm font-medium">Story</span>
         <Textarea name="story" placeholder="Write the context, family memory, or oral history behind the recipe." />
       </label>
-      <label className="space-y-2">
-        <span className="text-sm font-medium">Cookbook space</span>
-        <select name="spaceId" className="h-11 w-full rounded-2xl border bg-white/80 px-4 text-sm">
-          <option value="">Private only</option>
-          {spaces.map(({ space }) => (
-            <option key={space.id} value={space.id}>
-              {space.name}
-            </option>
-          ))}
-        </select>
-      </label>
+      {defaultSpaceId ? <input type="hidden" name="spaceId" value={defaultSpaceId} /> : null}
+      {!defaultSpaceId ? (
+        <label className="space-y-2">
+          <span className="text-sm font-medium">Cookbook space</span>
+          <select name="spaceId" className="h-11 w-full rounded-2xl border bg-white/80 px-4 text-sm">
+            <option value="">Private only</option>
+            {spaces.map(({ space }) => (
+              <option key={space.id} value={space.id}>
+                {space.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
       <label className="space-y-2">
         <span className="text-sm font-medium">Visibility</span>
-        <select name="visibility" className="h-11 w-full rounded-2xl border bg-white/80 px-4 text-sm" defaultValue={recipeVisibility.private}>
-          <option value={recipeVisibility.private}>Private to me</option>
-          <option value={recipeVisibility.space}>Shared in space</option>
-        </select>
+        {defaultSpaceId ? (
+          <>
+            <input type="hidden" name="visibility" value={recipeVisibility.space} />
+            <div className="flex h-11 items-center rounded-2xl border bg-white/80 px-4 text-sm">Shared in this cookbook space</div>
+          </>
+        ) : (
+          <select name="visibility" className="h-11 w-full rounded-2xl border bg-white/80 px-4 text-sm" defaultValue={recipeVisibility.private}>
+            <option value={recipeVisibility.private}>Private to me</option>
+            <option value={recipeVisibility.space}>Shared in space</option>
+          </select>
+        )}
       </label>
       <label className="space-y-2">
         <span className="text-sm font-medium">Cuisine</span>
@@ -458,6 +496,8 @@ function ManualSharedFields({ spaces }: { spaces: SpaceOption[] }) {
 function SourceDraftForm({
   action,
   spaces,
+  defaultSpaceId,
+  cookbookId,
   importMode,
   sourceType,
   title,
@@ -466,6 +506,8 @@ function SourceDraftForm({
 }: {
   action: (formData: FormData) => void | Promise<void>;
   spaces: SpaceOption[];
+  defaultSpaceId?: string;
+  cookbookId?: string;
   importMode: string;
   sourceType: SourceTypeValue;
   title: string;
@@ -476,21 +518,25 @@ function SourceDraftForm({
     <form action={action} className="space-y-4">
       <input name="importMode" type="hidden" value={importMode} />
       <input name="sourceType" type="hidden" value={sourceType} />
+      {cookbookId ? <input name="cookbookId" type="hidden" value={cookbookId} /> : null}
+      {defaultSpaceId ? <input name="spaceId" type="hidden" value={defaultSpaceId} /> : null}
       <div>
         <h3 className="text-lg font-semibold">{title}</h3>
         <p className="mt-1 text-sm text-[var(--muted-foreground)]">{description}</p>
       </div>
-      <label className="block space-y-2">
-        <span className="text-sm font-medium">Cookbook space</span>
-        <select name="spaceId" className="h-11 w-full rounded-2xl border bg-white/80 px-4 text-sm">
-          <option value="">Private draft</option>
-          {spaces.map(({ space }) => (
-            <option key={space.id} value={space.id}>
-              {space.name}
-            </option>
-          ))}
-        </select>
-      </label>
+      {!defaultSpaceId ? (
+        <label className="block space-y-2">
+          <span className="text-sm font-medium">Cookbook space</span>
+          <select name="spaceId" className="h-11 w-full rounded-2xl border bg-white/80 px-4 text-sm">
+            <option value="">Private draft</option>
+            {spaces.map(({ space }) => (
+              <option key={space.id} value={space.id}>
+                {space.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
       <label className="block space-y-2">
         <span className="text-sm font-medium">Optional title</span>
         <Input name="title" placeholder="Give the draft a working title" />

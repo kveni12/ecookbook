@@ -2,15 +2,15 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { Plus } from "lucide-react";
 
-import { saveRecipeAction } from "@/lib/actions";
 import { formatMinutes } from "@/lib/utils";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { ImportStudio } from "@/components/recipes/import-studio";
 
 export function CookbookWorkspace({
   cookbook
@@ -51,6 +51,12 @@ export function CookbookWorkspace({
             <Badge className="border border-[rgba(47,36,28,0.08)] bg-transparent text-[var(--foreground)]">
               {cookbook.recipes.length} recipes
             </Badge>
+            <Button asChild>
+              <Link href="#add-recipe">
+                <Plus className="mr-2 h-4 w-4" />
+                Add recipe
+              </Link>
+            </Button>
             <Button asChild variant="outline">
               <Link href="/dashboard">All cookbooks</Link>
             </Button>
@@ -58,7 +64,17 @@ export function CookbookWorkspace({
         </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+      <section id="add-recipe">
+        <ImportStudio
+          spaces={[{ space: { id: cookbook.space.id, name: cookbook.space.name } }]}
+          defaultSpaceId={cookbook.spaceId}
+          cookbookId={cookbook.id}
+          title="Add a recipe to this cookbook"
+          description="Write one from scratch, add an image, record a voice memo, upload a video, or save an Instagram/TikTok link directly into this book."
+        />
+      </section>
+
+      <section className="grid gap-6">
         <Card>
           <CardHeader>
             <CardTitle>Recipes in this cookbook</CardTitle>
@@ -109,49 +125,6 @@ export function CookbookWorkspace({
                 </p>
               ) : null}
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Add a recipe to this cookbook</CardTitle>
-            <CardDescription>Create it here and it will be added straight into this book.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form action={saveRecipeAction} className="space-y-4">
-              <input type="hidden" name="spaceId" value={cookbook.spaceId} />
-              <input type="hidden" name="cookbookId" value={cookbook.id} />
-              <input type="hidden" name="visibility" value="SPACE" />
-              <label className="block space-y-2">
-                <span className="text-sm font-medium">Title</span>
-                <Input name="title" placeholder="Weeknight tomato soup" required />
-              </label>
-              <label className="block space-y-2">
-                <span className="text-sm font-medium">Subtitle</span>
-                <Input name="subtitle" placeholder="Simple, bright, and made for this collection" />
-              </label>
-              <label className="block space-y-2">
-                <span className="text-sm font-medium">Ingredients</span>
-                <Textarea name="ingredients" placeholder={"4 tomatoes\n2 garlic cloves\nOlive oil"} required />
-              </label>
-              <label className="block space-y-2">
-                <span className="text-sm font-medium">Instructions</span>
-                <Textarea name="steps" placeholder={"Roast the tomatoes.\nBlend until smooth.\nSimmer and serve."} required />
-              </label>
-              <label className="block space-y-2">
-                <span className="text-sm font-medium">Main ingredients</span>
-                <Input name="mainIngredients" placeholder="tomato, garlic" />
-              </label>
-              <label className="block space-y-2">
-                <span className="text-sm font-medium">Tags</span>
-                <Input name="tags" placeholder="weeknight, soup" />
-              </label>
-              <label className="block space-y-2">
-                <span className="text-sm font-medium">Story or note</span>
-                <Textarea name="story" placeholder="Why this recipe belongs in this cookbook." />
-              </label>
-              <Button type="submit">Create recipe in cookbook</Button>
-            </form>
           </CardContent>
         </Card>
       </section>

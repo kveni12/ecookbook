@@ -503,6 +503,7 @@ export async function importRecipeTextAction(formData: FormData) {
 
 export async function importRecipeSourceAction(formData: FormData) {
   const user = await requireSessionUser();
+  const cookbookId = String(formData.get("cookbookId") ?? "") || undefined;
   const importMode = String(formData.get("importMode") ?? "website");
   const raw = String(formData.get("body") ?? "");
   const transcript = String(formData.get("transcript") ?? "");
@@ -628,6 +629,22 @@ export async function importRecipeSourceAction(formData: FormData) {
       })
     }
   });
+
+  if (cookbookId) {
+    const existingCount = await db.cookbookRecipe.count({
+      where: { cookbookId }
+    });
+
+    await db.cookbookRecipe.create({
+      data: {
+        cookbookId,
+        recipeId: created.id,
+        position: existingCount
+      }
+    });
+
+    revalidatePath(`/cookbooks/${cookbookId}`);
+  }
 
   revalidatePath("/dashboard");
   redirect(`/recipes/${created.id}`);
