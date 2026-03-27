@@ -63,13 +63,13 @@ export async function signUpAction(formData: FormData) {
     password: formData.get("password")
   });
   if (!parsed.success) {
-    return { error: "Please fill out all sign-up fields." };
+    throw new Error("Please fill out all sign-up fields.");
   }
 
   const existing = await db.user.findUnique({
     where: { email: parsed.data.email.toLowerCase() }
   });
-  if (existing) return { error: "An account with that email already exists." };
+  if (existing) throw new Error("An account with that email already exists.");
 
   const passwordHash = await bcrypt.hash(parsed.data.password, 10);
 
@@ -94,7 +94,7 @@ export async function createSpaceAction(formData: FormData) {
     name: formData.get("name"),
     description: formData.get("description")
   });
-  if (!parsed.success) return { error: "Please add a name for the space." };
+  if (!parsed.success) throw new Error("Please add a name for the space.");
 
   const slug = `${slugify(parsed.data.name)}-${crypto.randomUUID().slice(0, 6)}`;
   await db.cookbookSpace.create({
@@ -113,7 +113,6 @@ export async function createSpaceAction(formData: FormData) {
   });
 
   revalidatePath("/dashboard");
-  return { success: true };
 }
 
 export async function createCookbookAction(formData: FormData) {
@@ -128,7 +127,7 @@ export async function createCookbookAction(formData: FormData) {
     .filter(Boolean);
 
   if (!title || !spaceId || recipeIds.length === 0) {
-    return { error: "Choose a title, a space, and at least one recipe." };
+    throw new Error("Choose a title, a space, and at least one recipe.");
   }
 
   const membership = await db.membership.findUnique({
@@ -141,10 +140,10 @@ export async function createCookbookAction(formData: FormData) {
   });
 
   if (!membership) {
-    return { error: "You do not have access to that cookbook space." };
+    throw new Error("You do not have access to that cookbook space.");
   }
   if (!canManageSpace(membership.role)) {
-    return { error: "Only owners and editors can create cookbooks." };
+    throw new Error("Only owners and editors can create cookbooks.");
   }
 
   const cookbook = await db.cookbook.create({
@@ -183,7 +182,7 @@ export async function inviteMemberAction(formData: FormData) {
     }
   });
   if (membership?.role !== MembershipRole.OWNER) {
-    return { error: "Only owners can invite members." };
+    throw new Error("Only owners can invite members.");
   }
 
   await db.invite.upsert({
@@ -212,7 +211,6 @@ export async function inviteMemberAction(formData: FormData) {
   });
 
   revalidatePath(`/spaces/${spaceId}`);
-  return { success: true };
 }
 
 export async function saveRecipeAction(formData: FormData) {
@@ -243,7 +241,7 @@ export async function saveRecipeAction(formData: FormData) {
     steps: formData.get("steps")
   });
 
-  if (!parsed.success) return { error: "Please complete the required recipe fields." };
+  if (!parsed.success) throw new Error("Please complete the required recipe fields.");
 
   const ingredients = String(parsed.data.ingredients)
     .split("\n")
@@ -279,7 +277,7 @@ export async function saveRecipeAction(formData: FormData) {
     : null;
 
   if (parsed.data.visibility === RecipeVisibility.SPACE && !membership) {
-    return { error: "Shared recipes need a cookbook space." };
+    throw new Error("Shared recipes need a cookbook space.");
   }
 
   const recipe = await db.recipe.create({
@@ -350,7 +348,7 @@ export async function forkRecipeAction(recipeId: string) {
     where: { id: recipeId },
     include: { ingredients: true, steps: true, media: true }
   });
-  if (!recipe) return { error: "Recipe not found." };
+  if (!recipe) throw new Error("Recipe not found.");
 
   const duplicate = await db.recipe.create({
     data: {
@@ -413,7 +411,7 @@ export async function addCommentAction(formData: FormData) {
   const user = await requireSessionUser();
   const recipeId = String(formData.get("recipeId") ?? "");
   const body = String(formData.get("body") ?? "").trim();
-  if (!body) return { error: "Comment cannot be empty." };
+  if (!body) throw new Error("Comment cannot be empty.");
 
   await db.recipeComment.create({
     data: {
@@ -424,7 +422,6 @@ export async function addCommentAction(formData: FormData) {
   });
 
   revalidatePath(`/recipes/${recipeId}`);
-  return { success: true };
 }
 
 export async function toggleFavoriteAction(recipeId: string) {
@@ -464,7 +461,6 @@ export async function savePersonalNoteAction(formData: FormData) {
   });
 
   revalidatePath(`/recipes/${recipeId}`);
-  return { success: true };
 }
 
 export async function importRecipeTextAction(formData: FormData) {
@@ -538,7 +534,7 @@ export async function publishAdaptationBackAction(formData: FormData) {
     where: { id: recipeId },
     include: { ingredients: true, steps: true, media: true }
   });
-  if (!recipe) return { error: "Recipe not found." };
+  if (!recipe) throw new Error("Recipe not found.");
 
   const membership = await db.membership.findUnique({
     where: {
@@ -554,7 +550,7 @@ export async function publishAdaptationBackAction(formData: FormData) {
     currentUserId: user.id,
     visibility: recipe.visibility
   })) {
-    return { error: "You do not have permission to publish this recipe to that space." };
+    throw new Error("You do not have permission to publish this recipe to that space.");
   }
 
   const updated = await db.recipe.update({

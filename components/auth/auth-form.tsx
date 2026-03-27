@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Route } from "next";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,7 +59,7 @@ export function AuthForm({
   );
 }
 
-export function AuthFooterLink({ prompt, href, label }: { prompt: string; href: string; label: string }) {
+export function AuthFooterLink({ prompt, href, label }: { prompt: string; href: Route }) {
   return (
     <p>
       {prompt}{" "}
