@@ -140,8 +140,8 @@ export async function createCookbookAction(formData: FormData) {
     .map((value) => String(value))
     .filter(Boolean);
 
-  if (!title || !spaceId || recipeIds.length === 0) {
-    throw new Error("Choose a title, a space, and at least one recipe.");
+  if (!title || !spaceId) {
+    throw new Error("Choose a title and a cookbook space.");
   }
 
   const membership = await db.membership.findUnique({
@@ -168,12 +168,15 @@ export async function createCookbookAction(formData: FormData) {
       slug: `${slugify(title)}-${crypto.randomUUID().slice(0, 6)}`,
       spaceId,
       createdById: user.id,
-      recipes: {
-        create: recipeIds.map((recipeId, index) => ({
-          recipeId,
-          position: index
-        }))
-      }
+      recipes:
+        recipeIds.length > 0
+          ? {
+              create: recipeIds.map((recipeId, index) => ({
+                recipeId,
+                position: index
+              }))
+            }
+          : undefined
     }
   });
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { BookOpenText, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 
+import { createCookbookAction } from "@/lib/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,81 +13,81 @@ export function CookbookLibrary({
 }) {
   return (
     <div className="space-y-8">
-      <section className="grid gap-6 lg:grid-cols-[1.5fr_0.9fr]">
-        <Card>
-          <CardContent className="p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted-foreground)]">Cookbook library</p>
-            <h2 className="mt-4 text-4xl font-semibold tracking-tight">Open a cookbook and start cooking from there.</h2>
-            <p className="mt-4 max-w-2xl text-[15px] leading-8 text-[var(--muted-foreground)]">
-              FamilyCookbook works best when each collection feels like a real book. Open one to browse recipes, search
-              within it, or add a new recipe directly into that book.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Your shelves</CardTitle>
-            <CardDescription>Cookbooks you can open right now across your family spaces.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-            <div className="rounded-xl border border-[var(--border)] bg-white/80 p-4">
-              <p className="text-2xl font-semibold">{data.cookbooks.length}</p>
-              <p className="text-sm text-[var(--muted-foreground)]">Cookbooks</p>
-            </div>
-            <div className="rounded-xl border border-[var(--border)] bg-white/80 p-4">
-              <p className="text-2xl font-semibold">{data.recentRecipes.length}</p>
-              <p className="text-sm text-[var(--muted-foreground)]">Recent recipes</p>
-            </div>
-            <div className="rounded-xl border border-[var(--border)] bg-white/80 p-4">
-              <p className="text-2xl font-semibold">{data.spaces.length}</p>
-              <p className="text-sm text-[var(--muted-foreground)]">Spaces</p>
-            </div>
-          </CardContent>
-        </Card>
+      <section className="space-y-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted-foreground)]">Cookbook shelf</p>
+        <h2 className="text-4xl font-semibold tracking-tight">Pick a book off the shelf.</h2>
+        <p className="max-w-2xl text-[15px] leading-8 text-[var(--muted-foreground)]">
+          Open a cookbook to browse recipes inside it, search that collection, or add something new directly into the book.
+        </p>
       </section>
 
       <section className="space-y-4">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h3 className="text-2xl font-semibold tracking-tight">My cookbooks</h3>
-            <p className="text-sm text-[var(--muted-foreground)]">Choose a book to browse, search, and add recipes inside it.</p>
-          </div>
-          {data.cookbooks[0] ? (
-            <Button asChild variant="outline">
-              <Link href={`/spaces/${data.cookbooks[0].spaceId}`}>
-                <Plus className="mr-2 h-4 w-4" />
-                Create cookbook
-              </Link>
-            </Button>
-          ) : null}
-        </div>
-
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {data.cookbooks.map((cookbook) => (
             <Link key={cookbook.id} href={`/cookbooks/${cookbook.id}`}>
-              <article className="cookbook-sheet flex h-full flex-col justify-between px-7 py-8 transition hover:-translate-y-0.5">
-                <div className="space-y-4">
-                  <p className="cookbook-kicker">{cookbook.space.name}</p>
-                  <h4 className="text-3xl font-semibold tracking-tight">{cookbook.title}</h4>
-                  <p className="min-h-20 text-sm leading-7 text-[var(--muted-foreground)]">
-                    {cookbook.description ?? "A family collection ready to open like a real cookbook."}
-                  </p>
-                </div>
-                <div className="flex items-center justify-between gap-3 border-t border-[rgba(47,36,28,0.08)] pt-5">
-                  <div className="flex flex-wrap gap-2">
-                    <Badge className="border border-[rgba(47,36,28,0.08)] bg-transparent text-[var(--foreground)]">
-                      {cookbook.recipes.length} recipes
-                    </Badge>
+              <article className="book-cover h-full min-h-[22rem] transition hover:-translate-y-1">
+                <div className="book-spine" />
+                <div className="book-face flex h-full flex-col justify-between">
+                  <div className="space-y-4">
+                    <p className="book-kicker">{cookbook.space.name}</p>
+                    <h4 className="book-title">{cookbook.title}</h4>
+                    <p className="text-sm leading-7 text-[rgba(255,251,245,0.8)]">
+                      {cookbook.description ?? "A family collection ready to open like a real cookbook."}
+                    </p>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
-                    <BookOpenText className="h-4 w-4" />
-                    Open
+                  <div className="space-y-3">
+                    <div className="h-px bg-[rgba(255,251,245,0.18)]" />
+                    <div className="flex flex-wrap gap-2">
+                      <Badge className="border border-[rgba(255,251,245,0.18)] bg-transparent text-[rgba(255,251,245,0.9)]">
+                        {cookbook.recipes.length} recipes
+                      </Badge>
+                    </div>
                   </div>
                 </div>
               </article>
             </Link>
           ))}
+
+          <Card className="min-h-[22rem] border-dashed">
+            <CardContent className="flex h-full flex-col justify-between p-6">
+              <div className="space-y-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--muted)]/6">
+                  <Plus className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="text-2xl font-semibold tracking-tight">New cookbook</h4>
+                  <p className="mt-2 text-sm leading-7 text-[var(--muted-foreground)]">
+                    Make a new book, choose which family space it belongs to, and start filling the shelf.
+                  </p>
+                </div>
+              </div>
+              <form action={createCookbookAction} className="space-y-3">
+                <label className="block space-y-2">
+                  <span className="text-sm font-medium">Title</span>
+                  <input
+                    name="title"
+                    required
+                    placeholder="Sunday Suppers"
+                    className="h-11 w-full rounded-xl border bg-white/80 px-4 text-sm"
+                  />
+                </label>
+                <label className="block space-y-2">
+                  <span className="text-sm font-medium">Cookbook space</span>
+                  <select name="spaceId" className="h-11 w-full rounded-xl border bg-white/80 px-4 text-sm" required>
+                    <option value="">Choose a space</option>
+                    {data.spaces.map(({ space }) => (
+                      <option key={space.id} value={space.id}>
+                        {space.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <Button className="w-full" type="submit">
+                  Create book
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
         </div>
 
         {data.cookbooks.length === 0 ? (
