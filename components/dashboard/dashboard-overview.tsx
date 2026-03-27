@@ -10,12 +10,11 @@ export function DashboardOverview({ data }: { data: Awaited<ReturnType<typeof im
   return (
     <div className="space-y-6">
       <section className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-        <Card className="overflow-hidden">
-          <CardContent className="relative p-8">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(217,180,143,0.45),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(108,139,99,0.25),transparent_30%)]" />
-            <div className="relative z-10 max-w-xl space-y-5">
-              <Badge className="bg-[var(--accent)] text-[var(--accent-foreground)]">Living family cookbook</Badge>
-              <h2 className="text-4xl font-semibold leading-tight">
+        <Card>
+          <CardContent className="max-w-3xl p-8">
+            <div className="space-y-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted-foreground)]">Living family cookbook</p>
+              <h2 className="text-4xl font-semibold leading-tight tracking-tight">
                 Preserve the flavor, the memory, and every thoughtful adaptation.
               </h2>
               <p className="text-[15px] leading-7 text-[var(--muted-foreground)]">
@@ -40,7 +39,7 @@ export function DashboardOverview({ data }: { data: Awaited<ReturnType<typeof im
           </CardHeader>
           <CardContent className="space-y-3">
             {data.favoriteIngredients.map(([ingredient, count]) => (
-              <div key={ingredient} className="flex items-center justify-between rounded-2xl bg-white/70 px-4 py-3">
+              <div key={ingredient} className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-white/80 px-4 py-3">
                 <span className="font-medium capitalize">{ingredient}</span>
                 <Badge>{count} recipes</Badge>
               </div>
@@ -58,7 +57,7 @@ export function DashboardOverview({ data }: { data: Awaited<ReturnType<typeof im
         ].map((item) => (
           <Card key={item.label}>
             <CardContent className="flex items-center gap-4 p-5">
-              <div className="rounded-2xl bg-[var(--muted)] p-3">
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--muted)]/65 p-3">
                 <item.icon className="h-5 w-5" />
               </div>
               <div>
@@ -81,7 +80,7 @@ export function DashboardOverview({ data }: { data: Awaited<ReturnType<typeof im
               <Link
                 key={recipe.id}
                 href={`/recipes/${recipe.id}`}
-                className="flex flex-col gap-3 rounded-[1.75rem] bg-white/70 p-4 transition hover:bg-white"
+                className="flex flex-col gap-3 rounded-xl border border-[var(--border)] bg-white/80 p-4 transition hover:bg-white"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div>
@@ -111,7 +110,7 @@ export function DashboardOverview({ data }: { data: Awaited<ReturnType<typeof im
                 <Link
                   key={space.id}
                   href={`/spaces/${space.id}`}
-                  className="flex items-center justify-between rounded-[1.5rem] bg-white/70 px-4 py-4"
+                  className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-white/80 px-4 py-4"
                 >
                   <div>
                     <p className="font-semibold">{space.name}</p>
@@ -133,7 +132,7 @@ export function DashboardOverview({ data }: { data: Awaited<ReturnType<typeof im
             <CardContent className="space-y-4">
               {data.activity.map((entry) => (
                 <div key={entry.id} className="flex gap-3">
-                  <div className="mt-1 rounded-full bg-[var(--secondary)] p-2">
+                  <div className="mt-1 rounded-full border border-[var(--border)] bg-[var(--muted)] p-2">
                     <Users className="h-4 w-4" />
                   </div>
                   <div>

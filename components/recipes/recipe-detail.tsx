@@ -60,7 +60,7 @@ export function RecipeDetail({
                 { label: "Total", value: formatMinutes(recipe.totalTimeMinutes) },
                 { label: "Serves", value: recipe.servings ?? "Family style" }
               ].map((item) => (
-                <div key={item.label} className="rounded-[1.5rem] bg-white/70 p-4">
+                <div key={item.label} className="rounded-xl border border-[var(--border)] bg-white/80 p-4">
                   <p className="text-sm text-[var(--muted-foreground)]">{item.label}</p>
                   <p className="mt-1 font-semibold">{item.value}</p>
                 </div>
@@ -71,7 +71,7 @@ export function RecipeDetail({
             {recipe.coverImage ? (
               <Image src={recipe.coverImage} alt={recipe.title} fill className="object-cover" />
             ) : (
-              <div className="flex h-full items-center justify-center bg-[linear-gradient(135deg,#d9b48f,#f6ead8)] p-8 text-center text-[var(--muted-foreground)]">
+              <div className="flex h-full items-center justify-center bg-[var(--muted)] p-8 text-center text-[var(--muted-foreground)]">
                 Add a cover image, handwritten card photo, or family table snapshot.
               </div>
             )}
@@ -87,7 +87,7 @@ export function RecipeDetail({
             </CardHeader>
             <CardContent className="space-y-3">
               {recipe.ingredients.map((ingredient) => (
-                <div key={ingredient.id} className="flex items-start justify-between gap-4 rounded-2xl bg-white/70 px-4 py-3">
+                <div key={ingredient.id} className="flex items-start justify-between gap-4 rounded-xl border border-[var(--border)] bg-white/80 px-4 py-3">
                   <div>
                     <p className="font-medium">{[ingredient.quantity, ingredient.unit, ingredient.item].filter(Boolean).join(" ")}</p>
                     {ingredient.notes ? <p className="text-sm text-[var(--muted-foreground)]">{ingredient.notes}</p> : null}
@@ -102,8 +102,8 @@ export function RecipeDetail({
             </CardHeader>
             <CardContent className="space-y-4">
               {recipe.steps.map((step, index) => (
-                <div key={step.id} className="flex gap-4 rounded-[1.75rem] bg-white/70 p-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--primary)] text-sm text-[var(--primary-foreground)]">
+                <div key={step.id} className="flex gap-4 rounded-xl border border-[var(--border)] bg-white/80 p-4">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--muted)] text-sm">
                     {index + 1}
                   </div>
                   <div>
@@ -129,7 +129,7 @@ export function RecipeDetail({
                 </Button>
               </form>
               {recipe.comments.map((comment) => (
-                <div key={comment.id} className="rounded-[1.5rem] bg-white/70 p-4">
+                <div key={comment.id} className="rounded-xl border border-[var(--border)] bg-white/80 p-4">
                   <p className="text-sm font-medium">{comment.user.name ?? comment.user.email}</p>
                   <p className="mt-2 text-sm text-[var(--muted-foreground)]">{comment.body}</p>
                 </div>
@@ -146,17 +146,17 @@ export function RecipeDetail({
             </CardHeader>
             <CardContent className="space-y-3">
               {recipe.parentRecipe ? (
-                <Link href={`/recipes/${recipe.parentRecipe.id}`} className="block rounded-[1.5rem] bg-white/70 p-4">
+                <Link href={`/recipes/${recipe.parentRecipe.id}`} className="block rounded-xl border border-[var(--border)] bg-white/80 p-4">
                   <p className="text-sm text-[var(--muted-foreground)]">Adapted from</p>
                   <p className="font-semibold">{recipe.parentRecipe.title}</p>
                 </Link>
               ) : (
-                <p className="rounded-[1.5rem] bg-white/70 p-4 text-sm text-[var(--muted-foreground)]">
+                <p className="rounded-xl border border-[var(--border)] bg-white/80 p-4 text-sm text-[var(--muted-foreground)]">
                   This recipe is the original source in its current family branch.
                 </p>
               )}
               {recipe.lineageNote ? <p className="text-sm text-[var(--muted-foreground)]">{recipe.lineageNote}</p> : null}
-              <div className="rounded-[1.5rem] bg-[var(--muted)] p-4">
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--muted)]/55 p-4">
                 <p className="text-sm font-medium">Side-by-side comparison</p>
                 <p className="mt-1 text-sm text-[var(--muted-foreground)]">
                   This scaffold stores version snapshots for original and adapted recipes so a diff view can be layered
@@ -209,7 +209,7 @@ export function RecipeDetail({
             </CardHeader>
             <CardContent className="space-y-3">
               {recipe.versions.map((version) => (
-                <div key={version.id} className="rounded-[1.5rem] bg-white/70 p-4">
+                <div key={version.id} className="rounded-xl border border-[var(--border)] bg-white/80 p-4">
                   <p className="font-medium">{version.changeSummary}</p>
                   <p className="text-sm text-[var(--muted-foreground)]">{version.createdBy.name ?? version.createdBy.email}</p>
                 </div>
@@ -225,7 +225,7 @@ export function RecipeDetail({
             <CardContent className="space-y-3">
               {data.similarRecipes.length > 0 ? (
                 data.similarRecipes.map(({ recipe: similar }) => (
-                  <Link key={similar.id} href={`/recipes/${similar.id}`} className="block rounded-[1.5rem] bg-white/70 p-4">
+                  <Link key={similar.id} href={`/recipes/${similar.id}`} className="block rounded-xl border border-[var(--border)] bg-white/80 p-4">
                     <p className="font-semibold">{similar.title}</p>
                     <p className="text-sm text-[var(--muted-foreground)]">
                       {similar.mainIngredients.slice(0, 3).join(", ")}
@@ -233,7 +233,7 @@ export function RecipeDetail({
                   </Link>
                 ))
               ) : (
-                <p className="rounded-[1.5rem] bg-white/70 p-4 text-sm text-[var(--muted-foreground)]">
+                <p className="rounded-xl border border-[var(--border)] bg-white/80 p-4 text-sm text-[var(--muted-foreground)]">
                   Similar recipes will appear here as your family archive grows.
                 </p>
               )}

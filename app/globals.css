@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8f4ed;
-  --foreground: #2f241c;
-  --card: rgba(255, 251, 245, 0.92);
+  --background: #f6f3ed;
+  --foreground: #28231d;
+  --card: rgba(255, 255, 252, 0.94);
   --card-foreground: #2f241c;
-  --muted: #efe2d1;
-  --muted-foreground: #74604e;
-  --primary: #8f4f2c;
-  --primary-foreground: #fff9f2;
-  --secondary: #d9b48f;
-  --secondary-foreground: #33251b;
-  --accent: #6c8b63;
-  --accent-foreground: #f7fff2;
-  --border: rgba(102, 76, 54, 0.15);
-  --ring: rgba(143, 79, 44, 0.35);
-  --radius: 1.2rem;
+  --muted: #efebe3;
+  --muted-foreground: #6e655c;
+  --primary: #2d2924;
+  --primary-foreground: #fcfaf6;
+  --secondary: #ece6dd;
+  --secondary-foreground: #2d2924;
+  --accent: #ece6dd;
+  --accent-foreground: #2d2924;
+  --border: rgba(40, 35, 29, 0.1);
+  --ring: rgba(45, 41, 36, 0.18);
+  --radius: 0.9rem;
 }
 
 * {
@@ -25,10 +25,7 @@
 body {
   min-height: 100vh;
   color: var(--foreground);
-  background:
-    radial-gradient(circle at top left, rgba(255, 224, 189, 0.55), transparent 30%),
-    radial-gradient(circle at top right, rgba(179, 211, 162, 0.45), transparent 24%),
-    linear-gradient(180deg, #fcf8f1 0%, #f5eee4 100%);
+  background: linear-gradient(180deg, #f7f4ee 0%, #f3efe8 100%);
   font-family: Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
@@ -39,7 +36,7 @@ a {
 
 .surface {
   background: var(--card);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(8px);
 }
 
 .cookbook-sheet {

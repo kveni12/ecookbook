@@ -23,13 +23,13 @@ export function AppShell({
 
   return (
     <div className="mx-auto flex min-h-screen max-w-7xl gap-6 px-4 py-6 lg:px-6">
-      <Card className="sticky top-6 hidden h-[calc(100vh-3rem)] w-72 flex-col justify-between p-5 lg:flex">
-        <div className="space-y-8">
-          <div className="space-y-2">
-            <Badge className="bg-[var(--secondary)] text-[var(--secondary-foreground)]">Private family archive</Badge>
-            <h1 className="text-3xl font-semibold">FamilyCookbook</h1>
-            <p className="text-sm text-[var(--muted-foreground)]">
-              Recipes that carry memory, attribution, and all the little stories in between.
+      <Card className="sticky top-6 hidden h-[calc(100vh-3rem)] w-72 flex-col justify-between p-6 lg:flex">
+        <div className="space-y-10">
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted-foreground)]">FamilyCookbook</p>
+            <h1 className="text-2xl font-semibold tracking-tight">Private family archive</h1>
+            <p className="text-sm leading-7 text-[var(--muted-foreground)]">
+              Save recipes, preserve stories, and share a quieter family cookbook with the people it belongs to.
             </p>
           </div>
           <nav className="space-y-2">
@@ -37,25 +37,25 @@ export function AppShell({
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-[var(--foreground)] transition hover:bg-white/65"
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[var(--foreground)] transition hover:bg-[var(--muted)]"
               >
                 <item.icon className="h-4 w-4" />
                 {item.label}
               </Link>
             ))}
           </nav>
-          <div className="rounded-[1.75rem] bg-[var(--muted)] p-4">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--muted)]/55 p-4">
             <div className="mb-3 flex items-center gap-2 text-sm font-medium">
               <Search className="h-4 w-4" />
               Search and remix
             </div>
-            <p className="text-sm text-[var(--muted-foreground)]">
+            <p className="text-sm leading-7 text-[var(--muted-foreground)]">
               Find recipes by ingredient overlap, family tags, and shared space history.
             </p>
           </div>
         </div>
         <div className="space-y-4">
-          <div className="flex items-center gap-3 rounded-[1.5rem] bg-white/60 p-3">
+          <div className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-white/70 p-3">
             <Avatar>
               <AvatarImage src={user.image ?? undefined} alt={user.name ?? "User"} />
               <AvatarFallback>{(user.name ?? user.email ?? "F").slice(0, 1).toUpperCase()}</AvatarFallback>
@@ -74,12 +74,12 @@ export function AppShell({
         <Card className="p-4 lg:hidden">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-sm text-[var(--muted-foreground)]">FamilyCookbook</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted-foreground)]">FamilyCookbook</p>
               <p className="text-lg font-semibold">{user.name ?? "Family member"}</p>
             </div>
             <div className="flex flex-wrap gap-2">
               {nav.map((item) => (
-                <Link key={item.href} href={item.href} className="rounded-full bg-white/70 px-3 py-2 text-sm">
+                <Link key={item.href} href={item.href} className="rounded-full border border-[var(--border)] bg-white/80 px-3 py-2 text-sm">
                   {item.label}
                 </Link>
               ))}
