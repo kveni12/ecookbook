@@ -15,29 +15,12 @@ export async function getSimilarRecipesForUser(args: {
         { id: { not: args.recipeId } },
         {
           OR: [{ createdById: args.userId }, { space: { memberships: { some: { userId: args.userId } } } }]
-        },
-        ...(normalized.length
-          ? [
-              {
-                OR: [
-                  { mainIngredients: { hasSome: normalized } },
-                  {
-                    ingredients: {
-                      some: {
-                        OR: normalized.map((ingredient) => ({
-                          item: { contains: ingredient, mode: "insensitive" }
-                        }))
-                      }
-                    }
-                  }
-                ]
-              }
-            ]
-          : [])
+        }
       ]
     },
     include: {
       space: true,
+      ingredients: true,
       favorites: true
     },
     take: 12
@@ -45,12 +28,19 @@ export async function getSimilarRecipesForUser(args: {
 
   return candidates
     .map((recipe) => {
-      const overlap = recipe.mainIngredients.filter((ingredient) => normalized.includes(ingredient.toLowerCase())).length;
+      const ingredientPool = [
+        ...recipe.mainIngredients.map((ingredient) => ingredient.toLowerCase()),
+        ...recipe.ingredients.map((ingredient) => ingredient.item.toLowerCase())
+      ];
+      const overlap = normalized.filter((ingredient) =>
+        ingredientPool.some((candidate) => candidate.includes(ingredient))
+      ).length;
       return {
         recipe,
         score: overlap + recipe.favorites.length * 0.15
       };
     })
+    .filter(({ score }) => normalized.length === 0 || score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, 4);
 }
