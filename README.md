@@ -119,3 +119,7 @@ tsx prisma/seed.ts
 ```bash
 npm run test
 ```
+
+## Deployment note
+
+Private routes are enforced in server components and server actions. This project intentionally does not use Next.js middleware so Prisma and password-hashing code do not get pulled into the Edge runtime.
