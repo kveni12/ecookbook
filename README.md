@@ -89,8 +89,17 @@ prisma generate && next build
 Recommended post-deploy step:
 
 ```bash
-tsx prisma/seed.ts
+npm run db:bootstrap
 ```
+
+If sign-up throws a server error on Vercel, the most common cause is that the deployed Postgres database exists but the Prisma schema has not been pushed yet. Run:
+
+```bash
+npm run db:deploy
+npm run db:seed
+```
+
+Make sure `NEXTAUTH_URL` exactly matches your deployed URL, for example `https://ecookbook.vercel.app`.
 
 ## Data model highlights
 
@@ -123,3 +132,11 @@ npm run test
 ## Deployment note
 
 Private routes are enforced in server components and server actions. This project intentionally does not use Next.js middleware so Prisma and password-hashing code do not get pulled into the Edge runtime.
+
+## Security note
+
+- Passwords are hashed with `bcryptjs`; they are not stored in plain text.
+- Authentication runs on the server with NextAuth.
+- The app is private-by-default and checks access in server components and server actions.
+- Keep `NEXTAUTH_SECRET`, `DATABASE_URL`, `DIRECT_URL`, and `SUPABASE_SERVICE_ROLE_KEY` private in Vercel.
+- For production, use a strong random `NEXTAUTH_SECRET` and a managed Postgres instance from Supabase or Neon.
