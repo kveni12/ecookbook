@@ -587,7 +587,6 @@ export async function importRecipeSourceAction(formData: FormData) {
             ]
           }
         : undefined
-      }
     },
     include: {
       ingredients: true,
