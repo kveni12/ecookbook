@@ -1,6 +1,6 @@
 # FamilyCookbook
 
-FamilyCookbook is a private, collaborative recipe platform built with Next.js 15, TypeScript, Tailwind CSS, shadcn-style UI primitives, Prisma, PostgreSQL, NextAuth, and Supabase-ready media storage. It is designed to feel less like a bookmark manager and more like a living family archive where recipes evolve over generations while preserving attribution, story, and media.
+FamilyCookbook is a private, collaborative recipe platform built with Next.js 15, TypeScript, Tailwind CSS, shadcn-style UI primitives, Prisma, PostgreSQL, NextAuth, and Supabase-ready media storage. It is designed to feel less like a simple bookmark manager and more like a living family archive where recipes evolve over generations while preserving attribution, story, and media.
 
 ## What is included
 
