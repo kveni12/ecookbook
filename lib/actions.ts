@@ -1,7 +1,7 @@
 "use server";
 
 import bcrypt from "bcryptjs";
-import { MembershipRole, RecipeVisibility, SourceType } from "@prisma/client";
+import { MediaType, MembershipRole, RecipeVisibility, SourceType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -478,28 +478,84 @@ export async function savePersonalNoteAction(formData: FormData) {
 }
 
 export async function importRecipeTextAction(formData: FormData) {
+  await importRecipeSourceAction(formData);
+}
+
+export async function importRecipeSourceAction(formData: FormData) {
   const user = await requireSessionUser();
+  const importMode = String(formData.get("importMode") ?? "website");
   const raw = String(formData.get("body") ?? "");
+  const transcript = String(formData.get("transcript") ?? "");
+  const notes = String(formData.get("notes") ?? "");
+  const explicitTitle = String(formData.get("title") ?? "").trim();
   const sourceUrl = String(formData.get("sourceUrl") ?? "") || undefined;
   const spaceId = String(formData.get("spaceId") ?? "") || undefined;
-  const draft = parseMessyRecipeText(raw, sourceUrl);
+  const mediaUrl = String(formData.get("mediaUrl") ?? "") || undefined;
+  const mediaType = String(formData.get("mediaType") ?? "") || undefined;
+  const requestedSourceType = String(formData.get("sourceType") ?? "") as SourceType | "";
+  const fallbackText = [raw, transcript, notes].filter(Boolean).join("\n\n");
+  const hasStructuredText = fallbackText.trim().length > 0;
+  const draft = hasStructuredText
+    ? parseMessyRecipeText([explicitTitle || "Imported recipe", fallbackText].join("\n"), sourceUrl)
+    : null;
+
+  const sourceType =
+    requestedSourceType ||
+    (importMode === "social"
+      ? SourceType.SOCIAL
+      : importMode === "voice"
+        ? SourceType.FAMILY_ORAL_HISTORY
+        : importMode === "video"
+          ? SourceType.IMPORTED_VIDEO
+          : sourceUrl
+            ? SourceType.WEBSITE
+            : SourceType.MANUAL);
+
+  const titleByMode: Record<string, string> = {
+    website: "Imported website recipe",
+    social: "Imported social recipe",
+    voice: "Voice memo recipe draft",
+    video: "Video recipe draft",
+    photo: "Recipe card draft"
+  };
+  const resolvedTitle = explicitTitle || draft?.title || titleByMode[importMode] || "Imported recipe draft";
 
   const created = await db.recipe.create({
     data: {
       spaceId,
-      title: draft.title,
-      subtitle: draft.subtitle,
+      title: resolvedTitle,
+      subtitle:
+        draft?.subtitle ??
+        (importMode === "social"
+          ? "Drafted from a saved social post with manual confirmation"
+          : importMode === "voice"
+            ? "Drafted from a family voice memo"
+            : importMode === "photo"
+              ? "Drafted from a recipe card or cookbook photo"
+              : undefined),
       visibility: spaceId ? RecipeVisibility.SPACE : RecipeVisibility.PRIVATE,
-      tags: draft.tags,
-      mainIngredients: draft.mainIngredients,
+      tags: draft?.tags ?? [],
+      mainIngredients: draft?.mainIngredients ?? [],
       sourceLink: sourceUrl,
-      sourceType: sourceUrl ? SourceType.WEBSITE : SourceType.MANUAL,
-      sourcePreview: draft.sourcePreview,
+      sourceType,
+      sourcePreview: {
+        ...(draft?.sourcePreview ?? {}),
+        importMode,
+        mediaUrl,
+        transcript: transcript || undefined,
+        notes: notes || undefined,
+        extractionMode: hasStructuredText ? "parsed-text" : "metadata-only",
+        complianceNote:
+          importMode === "social" || importMode === "video"
+            ? "Saved source metadata and manual confirmation flow used when direct extraction is restricted."
+            : undefined
+      },
       authorName: user.name ?? undefined,
+      notes: notes || undefined,
       createdById: user.id,
       lastEditedById: user.id,
       ingredients: {
-        create: draft.ingredients.map((ingredient, index) => ({
+        create: (draft?.ingredients ?? []).map((ingredient, index) => ({
           position: index,
           quantity: ingredient.quantity,
           unit: ingredient.unit,
@@ -508,10 +564,29 @@ export async function importRecipeTextAction(formData: FormData) {
         }))
       },
       steps: {
-        create: draft.steps.map((step, index) => ({
+        create: (draft?.steps ?? []).map((step, index) => ({
           position: index,
           instruction: step.instruction
         }))
+      },
+      media: mediaUrl
+        ? {
+            create: [
+              {
+                type:
+                  (mediaType as MediaType) ||
+                  (importMode === "voice"
+                    ? MediaType.AUDIO
+                    : importMode === "photo"
+                      ? MediaType.IMAGE
+                      : MediaType.VIDEO),
+                url: mediaUrl,
+                caption: notes || transcript || sourceUrl || undefined,
+                position: 0
+              }
+            ]
+          }
+        : undefined
       }
     },
     include: {
@@ -525,7 +600,7 @@ export async function importRecipeTextAction(formData: FormData) {
     data: {
       recipeId: created.id,
       createdById: user.id,
-      changeSummary: "Imported recipe draft",
+      changeSummary: `Created ${importMode} recipe draft`,
       snapshot: buildRecipeSnapshot({
         recipe: created,
         ingredients: created.ingredients,

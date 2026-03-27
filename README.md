@@ -8,7 +8,7 @@ FamilyCookbook is a private, collaborative recipe platform built with Next.js 15
 - Cookbook Spaces with owner, editor, and viewer membership roles
 - Rich recipe model with ingredients, steps, tags, source metadata, notes, comments, favorites, and lineage
 - Recipe adaptation flow with preserved parent-child relationships and version snapshots
-- Import draft flow for pasted text and source URLs with compliant metadata-first fallback behavior
+- Single recipe studio for manual entry, websites, social links, voice memos, video clips, and recipe-card photos with compliant metadata-first fallback behavior
 - Web-first cookbook pages for themed collections and future PDF export support
 - Supabase Storage-ready upload endpoint for media
 - Seed script with 2 users, 1 family space, 6 base recipes, and 2 adaptations
@@ -48,8 +48,10 @@ cp .env.example .env
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
 - `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `SUPABASE_STORAGE_BUCKET`
+- `AUTH_TRUST_HOST`
 
 4. Create the database schema and seed demo data
 
@@ -111,7 +113,7 @@ Make sure `NEXTAUTH_URL` exactly matches your deployed URL, for example `https:/
 ## Product behavior notes
 
 - Social/video imports are designed to stay compliant: when direct extraction is unavailable, FamilyCookbook stores the URL, preview metadata, and an editable draft instead of bypassing platform restrictions.
-- `embedding Unsupported("vector")?` is included in the Prisma schema so you can enable `pgvector` later for semantic search in Supabase or Neon Postgres.
+- Voice memo, video, social, and recipe-card uploads now live in one dashboard studio instead of separate import pages.
 - The current scaffold implements rule-based ingredient overlap and structured import parsing. OpenAI-assisted parsing, tagging, and caption summarization can be added behind `OPENAI_API_KEY`.
 
 ## Suggested next production steps
@@ -120,7 +122,8 @@ Make sure `NEXTAUTH_URL` exactly matches your deployed URL, for example `https:/
 - Add object-level upload widgets and drag-and-drop media management
 - Implement recipe edit screens and visual side-by-side diff UI for versions
 - Add OCR worker integration for handwritten cards and screenshot parsing
-- Add search indexing with Postgres full text and optional `pgvector`
+- Add transcript generation for uploaded voice/video drafts
+- Add search indexing with Postgres full text and optional `pgvector` when the extension is enabled
 - Add PDF cookbook export using the local `pdf` skill workflow
 
 ## Testing
