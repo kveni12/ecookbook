@@ -16,12 +16,12 @@ export function AuthForm({
   title: string;
   description: string;
   submitLabel: string;
-  action: (formData: FormData) => void | Promise<void>;
+  action: (formData: FormData) => void | Promise<void> | Promise<unknown>;
   fields: Array<{ name: string; label: string; type?: string; placeholder?: string }>;
   footer: React.ReactNode;
   secondaryAction?: {
     label: string;
-    action: (formData: FormData) => void | Promise<void>;
+    action: (formData: FormData) => void | Promise<void> | Promise<unknown>;
   };
 }) {
   return (
@@ -31,7 +31,7 @@ export function AuthForm({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <form action={action} className="space-y-4">
+        <form action={action as (formData: FormData) => void | Promise<void>} className="space-y-4">
           {fields.map((field) => (
             <label key={field.name} className="block space-y-2 text-sm">
               <span className="font-medium">{field.label}</span>
@@ -43,7 +43,10 @@ export function AuthForm({
           </Button>
         </form>
         {secondaryAction ? (
-          <form action={secondaryAction.action} className="mt-3">
+          <form
+            action={secondaryAction.action as (formData: FormData) => void | Promise<void>}
+            className="mt-3"
+          >
             <Button className="w-full" variant="outline" type="submit">
               {secondaryAction.label}
             </Button>
