@@ -16,12 +16,12 @@ export function AuthForm({
   title: string;
   description: string;
   submitLabel: string;
-  action: (formData: FormData) => Promise<unknown>;
+  action: (formData: FormData) => void | Promise<void>;
   fields: Array<{ name: string; label: string; type?: string; placeholder?: string }>;
   footer: React.ReactNode;
   secondaryAction?: {
     label: string;
-    action: (formData: FormData) => Promise<unknown>;
+    action: (formData: FormData) => void | Promise<void>;
   };
 }) {
   return (
