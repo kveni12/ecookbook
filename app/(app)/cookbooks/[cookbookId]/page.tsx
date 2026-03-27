@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { CookbookDetail } from "@/components/cookbooks/cookbook-detail";
+import { CookbookWorkspace } from "@/components/cookbooks/cookbook-workspace";
 import { getCookbookById, getCurrentUser } from "@/lib/data";
 
 export default async function CookbookPage({ params }: { params: Promise<{ cookbookId: string }> }) {
@@ -8,7 +8,7 @@ export default async function CookbookPage({ params }: { params: Promise<{ cookb
 
   return (
     <AppShell user={user}>
-      <CookbookDetail cookbook={cookbook} />
+      <CookbookWorkspace cookbook={cookbook} />
     </AppShell>
   );
 }

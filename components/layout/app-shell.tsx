@@ -14,9 +14,9 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   const nav = [
-    { href: "/dashboard", label: "Dashboard", icon: Home },
+    { href: "/dashboard", label: "Cookbooks", icon: Home },
     { href: "/search", label: "Search", icon: Search },
-    { href: "/dashboard#recipes", label: "Recipes", icon: ChefHat },
+    { href: "/dashboard#new-recipe", label: "New Recipe", icon: ChefHat },
     { href: "/dashboard#spaces", label: "Spaces", icon: BookHeart },
     { href: "/dashboard#cookbooks", label: "Cookbooks", icon: LibraryBig }
   ];
@@ -27,9 +27,9 @@ export function AppShell({
         <div className="space-y-10">
           <div className="space-y-3">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted-foreground)]">FamilyCookbook</p>
-            <h1 className="text-2xl font-semibold tracking-tight">Private family archive</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">Your cookbook shelf</h1>
             <p className="text-sm leading-7 text-[var(--muted-foreground)]">
-              Save recipes, preserve stories, and share a quieter family cookbook with the people it belongs to.
+              Open a cookbook, browse the recipes inside it, and add new ones directly into that book.
             </p>
           </div>
           <nav className="space-y-2">

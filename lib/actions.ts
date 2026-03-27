@@ -229,6 +229,7 @@ export async function inviteMemberAction(formData: FormData) {
 
 export async function saveRecipeAction(formData: FormData) {
   const user = await requireSessionUser();
+  const cookbookId = String(formData.get("cookbookId") ?? "") || undefined;
   const parsed = recipeSchema.safeParse({
     spaceId: formData.get("spaceId") || undefined,
     title: formData.get("title"),
@@ -350,6 +351,22 @@ export async function saveRecipeAction(formData: FormData) {
       snapshot
     }
   });
+
+  if (cookbookId) {
+    const existingCount = await db.cookbookRecipe.count({
+      where: { cookbookId }
+    });
+
+    await db.cookbookRecipe.create({
+      data: {
+        cookbookId,
+        recipeId: recipe.id,
+        position: existingCount
+      }
+    });
+
+    revalidatePath(`/cookbooks/${cookbookId}`);
+  }
 
   revalidatePath("/dashboard");
   if (recipe.spaceId) revalidatePath(`/spaces/${recipe.spaceId}`);
