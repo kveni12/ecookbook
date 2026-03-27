@@ -4,28 +4,37 @@ import { Plus } from "lucide-react";
 import { createCookbookAction } from "@/lib/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 export function CookbookLibrary({
   data
 }: {
   data: Awaited<ReturnType<typeof import("@/lib/data").getDashboardData>>;
 }) {
+  const coverThemes = [
+    "book-cover--berry",
+    "book-cover--sage",
+    "book-cover--cocoa",
+    "book-cover--ink"
+  ];
+
   return (
     <div className="space-y-8">
-      <section className="space-y-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted-foreground)]">Cookbook shelf</p>
-        <h2 className="text-4xl font-semibold tracking-tight">Pick a book off the shelf.</h2>
-        <p className="max-w-2xl text-[15px] leading-8 text-[var(--muted-foreground)]">
-          Open a cookbook to browse recipes inside it, search that collection, or add something new directly into the book.
-        </p>
+      <section className="space-y-5">
+        <div className="space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted-foreground)]">Cookbook shelf</p>
+          <h2 className="text-4xl font-semibold tracking-tight">Choose a cookbook.</h2>
+          <p className="max-w-2xl text-[15px] leading-8 text-[var(--muted-foreground)]">
+            Everything starts here. Open a book to see its recipes, search inside it, and add something new without leaving the collection.
+          </p>
+        </div>
       </section>
 
-      <section className="space-y-4">
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {data.cookbooks.map((cookbook) => (
-            <Link key={cookbook.id} href={`/cookbooks/${cookbook.id}`}>
-              <article className="book-cover h-full min-h-[22rem] transition hover:-translate-y-1">
+      <section className="bookshelf-grid rounded-[2rem] border border-[rgba(40,35,29,0.08)] bg-[rgba(255,252,247,0.76)] p-5 md:p-7">
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          {data.cookbooks.map((cookbook, index) => (
+            <Link key={cookbook.id} href={`/cookbooks/${cookbook.id}`} className="group">
+              <article className={`book-cover ${coverThemes[index % coverThemes.length]} h-full min-h-[24rem] transition duration-200 group-hover:-translate-y-1`}>
                 <div className="book-spine" />
                 <div className="book-face flex h-full flex-col justify-between">
                   <div className="space-y-4">
@@ -48,16 +57,16 @@ export function CookbookLibrary({
             </Link>
           ))}
 
-          <Card className="min-h-[22rem] border-dashed">
+          <Card id="new-book" className="min-h-[24rem] rounded-[1.6rem] border-[rgba(40,35,29,0.08)] bg-[rgba(255,255,252,0.88)]">
             <CardContent className="flex h-full flex-col justify-between p-6">
-              <div className="space-y-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--muted)]/6">
-                  <Plus className="h-5 w-5" />
+              <div className="space-y-4">
+                <div className="new-book-mark">
+                  <Plus className="h-7 w-7" />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <h4 className="text-2xl font-semibold tracking-tight">New cookbook</h4>
-                  <p className="mt-2 text-sm leading-7 text-[var(--muted-foreground)]">
-                    Make a new book, choose which family space it belongs to, and start filling the shelf.
+                  <p className="text-sm leading-7 text-[var(--muted-foreground)]">
+                    Add another book to the shelf and start collecting recipes inside it.
                   </p>
                 </div>
               </div>
@@ -68,12 +77,12 @@ export function CookbookLibrary({
                     name="title"
                     required
                     placeholder="Sunday Suppers"
-                    className="h-11 w-full rounded-xl border bg-white/80 px-4 text-sm"
+                    className="h-11 w-full rounded-2xl border bg-white/80 px-4 text-sm"
                   />
                 </label>
                 <label className="block space-y-2">
                   <span className="text-sm font-medium">Cookbook space</span>
-                  <select name="spaceId" className="h-11 w-full rounded-xl border bg-white/80 px-4 text-sm" required>
+                  <select name="spaceId" className="h-11 w-full rounded-2xl border bg-white/80 px-4 text-sm" required>
                     <option value="">Choose a space</option>
                     {data.spaces.map(({ space }) => (
                       <option key={space.id} value={space.id}>
@@ -95,11 +104,11 @@ export function CookbookLibrary({
             <CardContent className="p-8">
               <h4 className="text-xl font-semibold">No cookbooks yet</h4>
               <p className="mt-2 max-w-xl text-sm leading-7 text-[var(--muted-foreground)]">
-                Start by opening one of your cookbook spaces and generating a themed cookbook from the recipes inside it.
+                Make your first cookbook to start a shelf. Once a book exists, you can open it and add recipes directly inside it.
               </p>
               {data.spaces[0] ? (
                 <Button asChild className="mt-5">
-                  <Link href={`/spaces/${data.spaces[0].space.id}`}>Go to my space</Link>
+                  <Link href="#new-book">Create my first cookbook</Link>
                 </Button>
               ) : null}
             </CardContent>

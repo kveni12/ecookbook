@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 
 import { formatMinutes } from "@/lib/utils";
 
@@ -64,40 +64,35 @@ export function CookbookWorkspace({
         </div>
       </section>
 
-      <section id="add-recipe">
-        <ImportStudio
-          spaces={[{ space: { id: cookbook.space.id, name: cookbook.space.name } }]}
-          defaultSpaceId={cookbook.spaceId}
-          cookbookId={cookbook.id}
-          title="Add a recipe to this cookbook"
-          description="Write one from scratch, add an image, record a voice memo, upload a video, or save an Instagram/TikTok link directly into this book."
-        />
-      </section>
-
-      <section className="grid gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recipes in this cookbook</CardTitle>
-            <CardDescription>Browse the book or search within it by title or ingredient.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-5">
+      <section className="grid gap-6 xl:grid-cols-[1.35fr_0.95fr]">
+        <Card className="border-[rgba(40,35,29,0.08)] bg-[rgba(255,253,249,0.92)]">
+          <CardHeader className="space-y-4">
+            <div className="space-y-2">
+              <CardTitle>Recipes in this cookbook</CardTitle>
+              <CardDescription>Browse the collection like a table of contents, then open any recipe page.</CardDescription>
+            </div>
             <label className="block space-y-2">
               <span className="text-sm font-medium">Search this cookbook</span>
-              <Input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search a recipe or ingredient"
-              />
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-foreground)]" />
+                <Input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Search a recipe or ingredient"
+                  className="pl-10"
+                />
+              </div>
             </label>
-
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="space-y-4">
               {filteredRecipes.map((entry, index) => (
                 <Link
                   key={entry.id}
                   href={`/recipes/${entry.recipe.id}`}
-                  className="grid gap-4 rounded-xl border border-[var(--border)] bg-white/80 p-4 transition hover:bg-white md:grid-cols-[64px_1fr]"
+                  className="grid gap-4 rounded-[1.35rem] border border-[rgba(40,35,29,0.08)] bg-white/88 p-5 transition hover:bg-white md:grid-cols-[64px_1fr]"
                 >
-                  <div className="text-2xl font-semibold text-[rgba(47,36,28,0.38)]">
+                  <div className="text-2xl font-semibold text-[rgba(47,36,28,0.34)]">
                     {String(index + 1).padStart(2, "0")}
                   </div>
                   <div className="space-y-3">
@@ -120,13 +115,23 @@ export function CookbookWorkspace({
               ))}
 
               {filteredRecipes.length === 0 ? (
-                <p className="rounded-xl border border-[var(--border)] bg-white/80 p-4 text-sm text-[var(--muted-foreground)]">
+                <p className="rounded-[1.35rem] border border-[rgba(40,35,29,0.08)] bg-white/88 p-5 text-sm text-[var(--muted-foreground)]">
                   No recipes matched that search inside this cookbook.
                 </p>
               ) : null}
             </div>
           </CardContent>
         </Card>
+
+        <section id="add-recipe">
+          <ImportStudio
+            spaces={[{ space: { id: cookbook.space.id, name: cookbook.space.name } }]}
+            defaultSpaceId={cookbook.spaceId}
+            cookbookId={cookbook.id}
+            title="Add a recipe"
+            description="Keep everything in this book. Add a recipe by typing it in, uploading a recipe card, recording a voice memo, adding a video, or saving an Instagram or TikTok link."
+          />
+        </section>
       </section>
     </div>
   );
