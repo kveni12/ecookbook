@@ -57,17 +57,31 @@ async function requireSessionUser() {
 }
 
 export async function signUpAction(formData: FormData) {
+  const rawName = String(formData.get("name") ?? "").trim();
+  const rawEmail = String(formData.get("email") ?? "").trim().toLowerCase();
+  const rawPassword = String(formData.get("password") ?? "");
+
   const parsed = signUpSchema.safeParse({
-    name: formData.get("name"),
-    email: formData.get("email"),
-    password: formData.get("password")
+    name: rawName,
+    email: rawEmail,
+    password: rawPassword
   });
   if (!parsed.success) {
-    throw new Error("Please fill out all sign-up fields.");
+    const firstIssue = parsed.error.issues[0];
+    if (firstIssue?.path[0] === "name") {
+      throw new Error("Please enter your name.");
+    }
+    if (firstIssue?.path[0] === "email") {
+      throw new Error("Please enter a valid email address.");
+    }
+    if (firstIssue?.path[0] === "password") {
+      throw new Error("Password must be at least 8 characters.");
+    }
+    throw new Error("Please complete the sign-up form.");
   }
 
   const existing = await db.user.findUnique({
-    where: { email: parsed.data.email.toLowerCase() }
+    where: { email: parsed.data.email }
   });
   if (existing) throw new Error("An account with that email already exists.");
 
@@ -76,13 +90,13 @@ export async function signUpAction(formData: FormData) {
   await db.user.create({
     data: {
       name: parsed.data.name,
-      email: parsed.data.email.toLowerCase(),
+      email: parsed.data.email,
       passwordHash
     }
   });
 
   await signIn("credentials", {
-    email: parsed.data.email.toLowerCase(),
+    email: parsed.data.email,
     password: parsed.data.password,
     redirectTo: "/dashboard"
   });
