@@ -72,6 +72,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   },
   events: {
     async createUser({ user }) {
+      if (!user.id) {
+        return;
+      }
+
       const spaceCount = await db.cookbookSpace.count({
         where: { ownerId: user.id }
       });
