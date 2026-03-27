@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const ingredientLine = /^(?<quantity>\d+(?:\/\d+)?(?:\.\d+)?)?\s*(?<unit>cups?|tbsp|tsp|g|kg|ml|l|oz|lb|cloves?)?\s*(?<item>.+)$/i;
+const ingredientLine = /^(\d+(?:\/\d+)?(?:\.\d+)?)?\s*(cups?|tbsp|tsp|g|kg|ml|l|oz|lb|cloves?)?\s*(.+)$/i;
 
 export const parseRecipeInputSchema = z.object({
   title: z.string().optional(),
@@ -50,13 +50,19 @@ export function parseMessyRecipeText(input: string, sourceUrl?: string): ParsedR
     .map((line) => line.replace(/^[-*]\s*/, ""))
     .map((line) => {
       const match = ingredientLine.exec(line);
-      if (!match?.groups) {
+      if (!match) {
         return { item: line };
       }
+
+      const [, quantity, unit, item] = match;
+      if (!item) {
+        return { item: line };
+      }
+
       return {
-        quantity: match.groups.quantity,
-        unit: match.groups.unit,
-        item: match.groups.item.trim()
+        quantity,
+        unit,
+        item: item.trim()
       };
     })
     .filter((ingredient) => ingredient.item.length > 0);
