@@ -59,13 +59,14 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user?.id) {
-        token.userId = user.id;
+        (token as { userId?: string }).userId = user.id;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user && token.userId) {
-        session.user.id = token.userId as string;
+      const userId = (token as { userId?: string }).userId;
+      if (session.user && userId) {
+        session.user.id = userId;
       }
       return session;
     }
@@ -110,11 +111,5 @@ declare module "next-auth" {
       email?: string | null;
       image?: string | null;
     };
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    userId?: string;
   }
 }
